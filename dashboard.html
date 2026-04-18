@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard WIN$ — Indicador Inteligente</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0d1117; color: #e6edf3; }
+  .header { background: #161b22; padding: 20px 30px; border-bottom: 1px solid #30363d; }
+  .header h1 { font-size: 22px; color: #58a6ff; }
+  .header p { color: #8b949e; font-size: 13px; margin-top: 4px; }
+  .container { padding: 24px 30px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
+  .card { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; }
+  .card .label { font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; }
+  .card .value { font-size: 24px; font-weight: 700; margin-top: 6px; }
+  .card .sub { font-size: 12px; color: #8b949e; margin-top: 4px; }
+  .green { color: #3fb950; }
+  .red { color: #f85149; }
+  .blue { color: #58a6ff; }
+  .yellow { color: #d29922; }
+  .charts { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 24px; }
+  .chart-box { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; }
+  .chart-box h3 { font-size: 13px; color: #8b949e; margin-bottom: 12px; }
+  .charts2 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { background: #21262d; color: #8b949e; padding: 8px 12px; text-align: left; font-weight: 500; }
+  td { padding: 7px 12px; border-bottom: 1px solid #21262d; }
+  tr:hover { background: #21262d33; }
+  .badge { padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+  .win { background: #1a3a2a; color: #3fb950; }
+  .loss { background: #3a1a1a; color: #f85149; }
+  .section { background: #161b22; border: 1px solid #30363d; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+  .section h3 { font-size: 13px; color: #8b949e; margin-bottom: 12px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; font-size: 12px; }
+  .bar-label { width: 100px; color: #8b949e; }
+  .bar-bg { flex: 1; background: #21262d; border-radius: 4px; height: 18px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; display: flex; align-items: center; padding-left: 8px; font-size: 11px; font-weight: 600; color: #0d1117; }
+  .updated { color: #8b949e; font-size: 11px; text-align: right; padding: 8px 0; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📊 Dashboard WIN$ — Indicador Inteligente</h1>
+  <p>Backtest out-of-sample · Set/2025 → Abr/2026 · Gerado em 18/04/2026 19:50</p>
+</div>
+
+<div class="container">
+
+  <div class="cards">
+    <div class="card">
+      <div class="label">Win Rate</div>
+      <div class="value green">68.9%</div>
+      <div class="sub">246/357 operações</div>
+    </div>
+    <div class="card">
+      <div class="label">Lucro Total</div>
+      <div class="value green">R$ 24,162</div>
+      <div class="sub">Capital base R$ 5.000</div>
+    </div>
+    <div class="card">
+      <div class="label">Profit Factor</div>
+      <div class="value green">2.96</div>
+      <div class="sub">Mín aceitável: 1.3</div>
+    </div>
+    <div class="card">
+      <div class="label">Sharpe Ratio</div>
+      <div class="value green">12.54</div>
+      <div class="sub">Mín aceitável: 1.5</div>
+    </div>
+    <div class="card">
+      <div class="label">Max Drawdown</div>
+      <div class="value green">R$ -760</div>
+      <div class="sub">Pior sequência</div>
+    </div>
+    <div class="card">
+      <div class="label">Ops / Dia</div>
+      <div class="value blue">2.9</div>
+      <div class="sub">123 dias operados</div>
+    </div>
+  </div>
+
+  <div class="charts">
+    <div class="chart-box">
+      <h3>CURVA DE EQUITY</h3>
+      <canvas id="equityChart" height="120"></canvas>
+    </div>
+    <div class="chart-box">
+      <h3>RESULTADO POR SEMANA</h3>
+      <canvas id="semanaChart" height="120"></canvas>
+    </div>
+  </div>
+
+  <div class="charts2">
+    <div class="section">
+      <h3>WIN RATE POR SESSÃO</h3>
+      
+    <div class="bar-row">
+      <div class="bar-label">abertura</div>
+      <div class="bar-bg">
+        <div class="bar-fill" style="width:69%; background:#3fb950">
+          69%
+        </div>
+      </div>
+      <span style="font-size:11px;color:#8b949e">98ops</span>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">americana</div>
+      <div class="bar-bg">
+        <div class="bar-fill" style="width:75%; background:#3fb950">
+          75%
+        </div>
+      </div>
+      <span style="font-size:11px;color:#8b949e">56ops</span>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">fechamento</div>
+      <div class="bar-bg">
+        <div class="bar-fill" style="width:100%; background:#3fb950">
+          100%
+        </div>
+      </div>
+      <span style="font-size:11px;color:#8b949e">3ops</span>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label">matinal</div>
+      <div class="bar-bg">
+        <div class="bar-fill" style="width:66%; background:#3fb950">
+          66%
+        </div>
+      </div>
+      <span style="font-size:11px;color:#8b949e">200ops</span>
+    </div>
+    </div>
+    <div class="section">
+      <h3>WIN RATE POR CONFIANÇA</h3>
+      
+    <div class="bar-row">
+      <div class="bar-label" style="font-size:10px">ALTO</div>
+      <div class="bar-bg">
+        <div class="bar-fill" style="width:55%; background:#d29922">
+          55%
+        </div>
+      </div>
+      <span style="font-size:11px;color:#8b949e">42</span>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label" style="font-size:10px">MODERADO</div>
+      <div class="bar-bg">
+        <div class="bar-fill" style="width:67%; background:#3fb950">
+          67%
+        </div>
+      </div>
+      <span style="font-size:11px;color:#8b949e">36</span>
+    </div>
+    <div class="bar-row">
+      <div class="bar-label" style="font-size:10px">MUITO ALTO</div>
+      <div class="bar-bg">
+        <div class="bar-fill" style="width:71%; background:#3fb950">
+          71%
+        </div>
+      </div>
+      <span style="font-size:11px;color:#8b949e">279</span>
+    </div>
+    </div>
+    <div class="section">
+      <h3>ESTATÍSTICAS RÁPIDAS</h3>
+      <table>
+        <tr><td style="color:#8b949e">Total ops</td><td class="green">357</td></tr>
+        <tr><td style="color:#8b949e">Ganho médio WIN</td><td class="green">R$ 148.46</td></tr>
+        <tr><td style="color:#8b949e">Perda média LOSS</td><td class="red">R$ -111.34</td></tr>
+        <tr><td style="color:#8b949e">Lote médio</td><td class="blue">1.90</td></tr>
+        <tr><td style="color:#8b949e">TP médio</td><td class="blue">401 pts</td></tr>
+        <tr><td style="color:#8b949e">SL médio</td><td class="blue">276 pts</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="section">
+    <h3>ÚLTIMAS 20 OPERAÇÕES</h3>
+    <table>
+      <tr>
+        <th>Data/Hora</th>
+        <th>Direção</th>
+        <th>Score</th>
+        <th>Confiança</th>
+        <th>Sessão</th>
+        <th>Resultado</th>
+        <th>R$</th>
+      </tr>
+      
+    <tr>
+      <td style="color:#8b949e">2026-04-07 11:00</td>
+      <td style="color:#3fb950;font-weight:600">BUY</td>
+      <td>0.8491</td>
+      <td>MUITO ALTO</td>
+      <td>matinal</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 263.2</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-07 11:35</td>
+      <td style="color:#f85149;font-weight:600">SELL</td>
+      <td>0.708</td>
+      <td>MODERADO</td>
+      <td>matinal</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 129.8</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-08 10:05</td>
+      <td style="color:#f85149;font-weight:600">SELL</td>
+      <td>0.9309</td>
+      <td>MUITO ALTO</td>
+      <td>matinal</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 324.4</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-08 10:35</td>
+      <td style="color:#f85149;font-weight:600">SELL</td>
+      <td>1.0208</td>
+      <td>MUITO ALTO</td>
+      <td>matinal</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 364.8</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-08 11:05</td>
+      <td style="color:#f85149;font-weight:600">SELL</td>
+      <td>0.8736</td>
+      <td>MUITO ALTO</td>
+      <td>matinal</td>
+      <td><span class="badge loss">LOSS</span></td>
+      <td style="color:#f85149;font-weight:600">R$ -245.2</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-09 09:10</td>
+      <td style="color:#3fb950;font-weight:600">BUY</td>
+      <td>0.7498</td>
+      <td>ALTO</td>
+      <td>abertura</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 156.4</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-09 09:40</td>
+      <td style="color:#3fb950;font-weight:600">BUY</td>
+      <td>0.7042</td>
+      <td>MODERADO</td>
+      <td>abertura</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 88.4</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-09 10:15</td>
+      <td style="color:#3fb950;font-weight:600">BUY</td>
+      <td>0.81</td>
+      <td>MUITO ALTO</td>
+      <td>matinal</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 195.6</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-10 13:00</td>
+      <td style="color:#3fb950;font-weight:600">BUY</td>
+      <td>0.9363</td>
+      <td>MUITO ALTO</td>
+      <td>americana</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 177.2</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-10 13:45</td>
+      <td style="color:#3fb950;font-weight:600">BUY</td>
+      <td>0.9314</td>
+      <td>MUITO ALTO</td>
+      <td>americana</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 142.0</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-10 14:30</td>
+      <td style="color:#3fb950;font-weight:600">BUY</td>
+      <td>0.8402</td>
+      <td>MUITO ALTO</td>
+      <td>americana</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 127.2</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-13 09:45</td>
+      <td style="color:#3fb950;font-weight:600">BUY</td>
+      <td>0.7078</td>
+      <td>MODERADO</td>
+      <td>abertura</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 93.4</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-13 10:15</td>
+      <td style="color:#3fb950;font-weight:600">BUY</td>
+      <td>0.9809</td>
+      <td>MUITO ALTO</td>
+      <td>matinal</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 180.4</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-13 11:30</td>
+      <td style="color:#f85149;font-weight:600">SELL</td>
+      <td>0.7018</td>
+      <td>MODERADO</td>
+      <td>matinal</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 99.2</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-14 13:20</td>
+      <td style="color:#3fb950;font-weight:600">BUY</td>
+      <td>0.8233</td>
+      <td>MUITO ALTO</td>
+      <td>americana</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 136.0</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-14 13:50</td>
+      <td style="color:#3fb950;font-weight:600">BUY</td>
+      <td>0.8747</td>
+      <td>MUITO ALTO</td>
+      <td>americana</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 117.6</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-14 14:20</td>
+      <td style="color:#f85149;font-weight:600">SELL</td>
+      <td>0.8617</td>
+      <td>MUITO ALTO</td>
+      <td>americana</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 116.0</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-15 11:50</td>
+      <td style="color:#f85149;font-weight:600">SELL</td>
+      <td>0.7002</td>
+      <td>MODERADO</td>
+      <td>matinal</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 101.6</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-15 13:30</td>
+      <td style="color:#f85149;font-weight:600">SELL</td>
+      <td>0.9238</td>
+      <td>MUITO ALTO</td>
+      <td>americana</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 120.0</td>
+    </tr>
+    <tr>
+      <td style="color:#8b949e">2026-04-15 14:00</td>
+      <td style="color:#3fb950;font-weight:600">BUY</td>
+      <td>0.8665</td>
+      <td>MUITO ALTO</td>
+      <td>americana</td>
+      <td><span class="badge win">WIN</span></td>
+      <td style="color:#3fb950;font-weight:600">R$ 119.6</td>
+    </tr>
+    </table>
+  </div>
+
+  <div class="updated">Gerado em 18/04/2026 às 19:50:02</div>
+
+</div>
+
+<script>
+const eqLabels = ["2025-09-17", "2025-09-18", "2025-09-19", "2025-09-22", "2025-09-23", "2025-09-24", "2025-09-25", "2025-09-26", "2025-09-29", "2025-09-30", "2025-10-01", "2025-10-03", "2025-10-06", "2025-10-07", "2025-10-08", "2025-10-09", "2025-10-10", "2025-10-13", "2025-10-14", "2025-10-15", "2025-10-16", "2025-10-17", "2025-10-20", "2025-10-21", "2025-10-22", "2025-10-23", "2025-10-24", "2025-10-27", "2025-10-28", "2025-10-29", "2025-10-30", "2025-10-31", "2025-11-03", "2025-11-04", "2025-11-06", "2025-11-07", "2025-11-10", "2025-11-12", "2025-11-13", "2025-11-17", "2025-11-18", "2025-11-19", "2025-11-21", "2025-11-24", "2025-11-25", "2025-11-27", "2025-11-28", "2025-12-01", "2025-12-02", "2025-12-03", "2025-12-08", "2025-12-10", "2025-12-11", "2025-12-12", "2025-12-15", "2025-12-17", "2025-12-18", "2025-12-19", "2025-12-22", "2025-12-23", "2025-12-26", "2025-12-29", "2025-12-30", "2026-01-02", "2026-01-05", "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09", "2026-01-12", "2026-01-13", "2026-01-15", "2026-01-16", "2026-01-19", "2026-01-28", "2026-01-30", "2026-02-02", "2026-02-03", "2026-02-05", "2026-02-06", "2026-02-09", "2026-02-10", "2026-02-11", "2026-02-13", "2026-02-18", "2026-02-19", "2026-02-20", "2026-02-23", "2026-02-24", "2026-02-25", "2026-02-26", "2026-02-27", "2026-03-02", "2026-03-04", "2026-03-06", "2026-03-09", "2026-03-10", "2026-03-11", "2026-03-13", "2026-03-16", "2026-03-17", "2026-03-18", "2026-03-19", "2026-03-24", "2026-03-25", "2026-03-26", "2026-03-27", "2026-03-30", "2026-03-31", "2026-04-01", "2026-04-02", "2026-04-06", "2026-04-07", "2026-04-08", "2026-04-09", "2026-04-10", "2026-04-13", "2026-04-14", "2026-04-15"];
+const eqData   = [50.2, 335.6, 341.6, 706.0, 946.4, 1170.4, 1557.6, 1426.0, 1548.0, 1908.0, 2186.4, 2226.4, 2538.4, 2536.4, 2784.8, 2978.8, 3314.0, 3234.4, 3451.6, 3872.8, 4238.8, 4395.6, 4596.4, 4484.4, 4832.8, 4766.4, 4584.0, 4936.4, 5105.4, 5441.4, 5737.0, 5896.2, 6174.6, 5935.0, 6078.2, 5913.4, 6035.0, 6026.2, 5744.2, 6162.2, 6555.8, 6790.2, 7012.2, 7325.4, 7329.0, 7186.8, 7188.8, 7322.0, 7684.4, 7867.6, 7292.8, 7210.4, 7818.8, 7999.6, 8417.6, 8712.4, 8617.6, 8811.2, 9185.6, 9342.4, 9770.0, 9960.2, 9765.4, 9942.2, 10116.2, 10187.4, 10471.0, 10736.6, 11100.6, 11261.8, 11577.8, 11509.4, 11605.2, 11995.6, 11836.4, 11794.4, 11759.8, 12165.6, 12412.4, 13124.8, 13336.8, 13312.8, 13387.8, 14058.2, 14582.2, 14179.0, 14331.4, 14858.6, 14951.8, 15510.6, 15444.6, 16117.4, 16439.4, 16397.8, 16287.8, 16971.0, 17193.4, 17494.6, 18234.2, 18804.2, 19078.6, 19445.0, 19809.0, 20079.4, 20257.6, 19704.4, 20034.0, 20329.6, 20701.6, 20602.0, 20956.0, 21520.8, 21354.0, 22071.4, 22347.4, 22808.6, 23171.2, 23586.8, 23922.0];
+
+new Chart(document.getElementById('equityChart'), {
+  type: 'line',
+  data: {
+    labels: eqLabels,
+    datasets: [{
+      label: 'Equity (R$)',
+      data: eqData,
+      borderColor: '#58a6ff',
+      backgroundColor: 'rgba(88,166,255,0.1)',
+      borderWidth: 2,
+      fill: true,
+      pointRadius: 0,
+      tension: 0.3
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { color: '#8b949e', maxTicksLimit: 8 }, grid: { color: '#21262d' } },
+      y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+    }
+  }
+});
+
+const semLabels = ["2026-01-26/2026-02-01", "2026-02-02/2026-02-08", "2026-02-09/2026-02-15", "2026-02-16/2026-02-22", "2026-02-23/2026-03-01", "2026-03-02/2026-03-08", "2026-03-09/2026-03-15", "2026-03-16/2026-03-22", "2026-03-23/2026-03-29", "2026-03-30/2026-04-05", "2026-04-06/2026-04-12", "2026-04-13/2026-04-19"];
+const semData   = [-201.2, 1330.4, 1016.6, 404.8, 1799.2, 223.2, 1902.0, 1778.4, -63.4, 1166.8, 1725.4, 1083.8];
+const semColors = semData.map(v => v >= 0 ? '#3fb950' : '#f85149');
+
+new Chart(document.getElementById('semanaChart'), {
+  type: 'bar',
+  data: {
+    labels: semLabels,
+    datasets: [{
+      label: 'PnL (R$)',
+      data: semData,
+      backgroundColor: semColors,
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { color: '#8b949e', maxTicksLimit: 6 }, grid: { color: '#21262d' } },
+      y: { ticks: { color: '#8b949e' }, grid: { color: '#21262d' } }
+    }
+  }
+});
+</script>
+</body>
+</html>
